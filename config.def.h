@@ -16,9 +16,6 @@ static const Bool topbar            = True;     /* False means bottom bar */
 static const Bool systray_enable = True;
 static const int systray_spacing = 1;
 
-/* tagging */
-static const char *tags[] = { "い", "ろ", "は", "に", "ほ", "へ", "と", "ち", "り" };
-
 static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            True,        -1 },
@@ -35,6 +32,23 @@ static const Layout layouts[] = {
 	{ "[]=",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "[B]",      bstack },
+};
+
+/* tagging */
+//static const char *tags[] = { "い", "ろ", "は", "に", "ほ", "へ", "と", "ち", "り" };
+
+static const Tag tags[] = {
+	// name layout mfact nmaster
+	{ "い", &layouts[0], -1, -1 },
+	{ "ろ", &layouts[0], -1, -1 },
+	{ "は", &layouts[0], -1, -1 },
+	{ "に", &layouts[0], -1, -1 },
+	{ "ほ", &layouts[0], -1, -1 },
+	{ "へ", &layouts[0], -1, -1 },
+	{ "と", &layouts[0], -1, -1 },
+	{ "ち", &layouts[2], -1, -1 },
+	{ "り", &layouts[2], -1, -1 },
 };
 
 /* key definitions */
