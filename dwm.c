@@ -299,6 +299,8 @@ static Systray *systray_find(Window win);
 static int systray_get_width(void);
 static void systray_update(void);
 
+static void debug(const Arg *arg);
+
 /* variables */
 static const char broken[] = "broken";
 static char stext[256];
@@ -529,6 +531,8 @@ cleanup(void) {
 	Arg a = {.ui = ~0};
 	Layout foo = { "", NULL };
 	Monitor *m;
+
+	systray_freeicons();
 
 	view(&a);
 	selmon->lt[selmon->sellt] = &foo;
@@ -2249,7 +2253,23 @@ systray_acquire(void) {
 		return False;
 	}
 	XSync(dpy, False);
-	
+
+	XEvent ev;
+	ev.xclient.type = ClientMessage;
+	ev.xclient.serial = 0;
+	ev.xclient.send_event = True;
+	ev.xclient.message_type = XInternAtom(dpy, "MANAGER", False);
+	ev.xclient.window = ROOT;
+	ev.xclient.format = 32;
+
+	ev.xclient.data.l[0] = CurrentTime;
+	ev.xclient.data.l[1] = netatom[NetSystemTray];
+	ev.xclient.data.l[2] = traywin;
+	ev.xclient.data.l[3] = 0;
+	ev.xclient.data.l[4] = 0;
+
+	XSendEvent(dpy,ROOT,False,StructureNotifyMask,&ev);
+
 	return True;
 }
 
@@ -2405,6 +2425,24 @@ shiftview(const Arg *arg) {
 		   | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
 
 	view(&shifted);
+}
+
+void
+debug(const Arg *arg) {
+	Systray *i;
+	FILE *f;
+	f = fopen("/tmp/dwm","w");
+
+	for(i = trayicons; i; i = i->next) {
+		fprintf(f,"%i ",i->win);
+	}
+	fprintf(f,"\n");
+
+	XWindowAttributes wa;
+	XGetWindowAttributes(dpy, traywin, &wa);
+	fprintf(f,"%i %i\n",wa.width, systray_get_width());
+
+	fclose(f);
 }
 
 int
