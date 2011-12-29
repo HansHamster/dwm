@@ -587,7 +587,7 @@ clientmessage(XEvent *e) {
 	Client *c = wintoclient(cme->window);
 
 	if(cme->window == traywin) {
-		if(cme->data.l[1] == XEMBED_EMBEDDED_NOTIFY){
+		if(cme->data.l[1] == XEMBED_EMBEDDED_NOTIFY && cme->data.l[2]){
 			systray_add(cme->data.l[2]);
 			systray_update();
 		}
@@ -2343,7 +2343,7 @@ systray_find(Window win) {
 
 int 
 systray_get_width(void) {
-	int w = 0;
+/*	int w = 0;
 	Systray *i;
 
 	if(!systray_enable) return 0;
@@ -2351,7 +2351,10 @@ systray_get_width(void) {
 	for(i = trayicons; i; i = i->next)
 		w += i->geo.width + systray_spacing + 1;
 
-	return w;
+	return w;*/
+	XWindowAttributes wa;
+	XGetWindowAttributes(dpy, traywin, &wa);
+	return wa.width;
 }
 
 void 
